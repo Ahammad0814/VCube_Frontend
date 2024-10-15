@@ -8,14 +8,17 @@ import { LoginContext } from '../api/login';
 import { useAuth } from '../api/AuthContext';
 import { UsersAuthContext } from '../api/UsersAuth';
 import { UserGoogleContext } from '../api/Google';
+import { CourseContext } from '../api/Course';
 
 const AddNewUser = ({ handleShowSnackbar, setIsLoading, setTabValue }) => {
     const { newUserCreate, checkUser, checkPassword, checkUserDetails } = useContext(LoginContext);
+    const { fetchCourse } = useContext(CourseContext);
     const { logout } = useAuth();
     const { removeUserLoginData } = useContext(UsersAuthContext);
     const { userGoogleLogout } = useContext(UserGoogleContext);
     const userDetails = UserDetails('All');
     const isUser = UserDetails('User');
+    const [courseData, setCourseData] = useState([]);
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const [phone, setPhone] = useState(null);
@@ -34,6 +37,22 @@ const AddNewUser = ({ handleShowSnackbar, setIsLoading, setTabValue }) => {
             setCourse(userDetails.Course);
         }
     }, [userDetails]);
+
+    useEffect(()=>{
+        const fetchData = async () => {
+            if(isUser !== 'Super Admin')return;
+            setIsLoading(true);
+            const res = await fetchCourse();
+            setIsLoading(false);
+            if (res && res.message){
+                handleShowSnackbar('error',`Failed to fetch Course data. ${res.message}`)
+            }else if(res && Array.isArray(res)){
+                setCourseData(res);
+            }
+        }
+    
+        fetchData();
+    },[])
 
     const handleSubmit = () => {
         setOnSubmit(true);
@@ -316,8 +335,9 @@ const AddNewUser = ({ handleShowSnackbar, setIsLoading, setTabValue }) => {
                 fontSize: '20px',
                 },}}
                 >
-                <MenuItem value="Python">Python</MenuItem>
-                <MenuItem value="Java">Java</MenuItem>
+                {Array.isArray(courseData) && courseData.map((course)=>
+                    <MenuItem value={course.Course}>{course.Course}</MenuItem>
+                )}
                 <MenuItem value="Placements">Placements</MenuItem>
             </Select>
             <FormHelperText sx={{color : '#d32f2f'}}>{(onSubmit && !course) ? "Select Batch" : ""}</FormHelperText>

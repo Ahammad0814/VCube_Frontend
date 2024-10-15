@@ -7,6 +7,7 @@ import { LoginContext } from '../api/login';
 import { UsersAuthContext } from '../api/UsersAuth';
 import { UserGoogleContext } from '../api/Google';
 import { useAuth } from '../api/AuthContext';
+import { UserDetails } from '../UserDetails';
 
 const ChangeDetails = ({ user, handleShowSnackbar, handleClose, setIsLoading, image }) => {
     const { userUpdate, checkPassword } = useContext(LoginContext);
@@ -48,7 +49,7 @@ const ChangeDetails = ({ user, handleShowSnackbar, handleClose, setIsLoading, im
 
     const checkUserAuth = async()=>{
         const data = {
-            Username : username,
+            Username : UserDetails('All').Username,
             Password : accPassword
         }
         const res = await checkPassword(data);
