@@ -214,6 +214,7 @@ const PlacementsDashboard = () => {
                             setStudentsFeedback={setStudentsFeedback}
                             setSettingsOpen={setSettingsOpen}
                             setConfirmLogout={setConfirmLogout}
+                            view={'Placements Dashboard'}
                         />
                     </Suspense>
                 )}
@@ -290,8 +291,6 @@ const PlacementsDashboard = () => {
                     <AdminNotifications
                         isOpen={batchNotif}
                         setIsOpen={setBatchNotif}
-                        selectedCourse={selectedCourse}
-                        selectedBatch={selectedBatch}
                         handleShowSnackbar={handleShowSnackbar}
                         setIsLoading={setIsLoading}
                         setNotifLen={setNotifLen}

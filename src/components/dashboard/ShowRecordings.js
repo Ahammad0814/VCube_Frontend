@@ -1,7 +1,7 @@
 import React, { startTransition, useContext, useEffect } from 'react';
 import { Box, Button, Card, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Typography } from '@mui/material';
 import { useState } from 'react';
-import { CloseRounded, DeleteForeverRounded, PlayDisabledRounded, SmartDisplayRounded } from '@mui/icons-material';
+import { CloseRounded, DeleteForeverRounded, PlayDisabledRounded, ReplayRounded, SmartDisplayRounded } from '@mui/icons-material';
 import { AssessmentContext } from '../api/Assessment';
 
 const ShowRecordings = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, handleShowSnackbar }) => {
@@ -10,12 +10,17 @@ const ShowRecordings = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, hand
     const [deleteRecord, setDeleteRecord] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [showVedio, setShowVedio] = useState(null);
+    const [refresh, setRefresh] = useState(false);
     
     const fetchData = async () => {
         const res = await fetchRecordings(selectedCourse || 'Python');
         if (res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             setRecordingsData(res);
         }
     }
@@ -36,12 +41,23 @@ const ShowRecordings = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, hand
         }
     }
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
   return (
     <>
     <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
         <img src='/images/V-Cube-Logo.png' alt='' width='10%' className='ml-[45%]' />
         <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={()=>setIsOpen(false)}>
             <CloseRounded sx={{fontSize : '35px'}}/>
+        </IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
         </IconButton>
         <DialogTitle variant='h5'>Uploaded Recordings</DialogTitle>
         <DialogContent className='w-[70rem] h-[50rem]' sx={{scrollbarWidth : 'thin'}}>

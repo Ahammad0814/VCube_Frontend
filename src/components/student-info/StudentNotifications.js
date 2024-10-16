@@ -1,6 +1,6 @@
 import React, { startTransition, useContext, useEffect, useState } from 'react';
 import { Badge, Box, Card, Dialog, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { CloseRounded, MessageRounded, NotificationsRounded, Visibility } from '@mui/icons-material';
+import { CloseRounded, MessageRounded, NotificationsRounded, ReplayRounded, Visibility } from '@mui/icons-material';
 import { BatchContext } from '../api/batch';
 import { DateTime } from '../date-time';
 import { StudentsContext } from '../api/students';
@@ -10,30 +10,46 @@ const StudentNotifications = ({ isOpen, setIsOpen, course, batchName, handleShow
   const { fetchBatchMessageData } = useContext(BatchContext);
   const { fetchBatchToStudentMessageData } = useContext(StudentsContext);
   const [batchData, setBatchData] = useState([]);
-
+  const [refresh, setRefresh] = useState(false);
   
+    const fetchData = async() => {
+        const res = await fetchBatchMessageData(course);
+        const result = await fetchBatchToStudentMessageData(stdId);
+        if (res && res.message){
+            handleShowSnackbar('error',res.message);
+        }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
+            const resData = Array.isArray(res) && res.length > 0 && res.filter(data=>(data.Course === course && data.BatchName === batchName));
+            const data = !(result.message) ? resData && result && resData.concat(result) : resData;
+            setBatchData([...data].reverse());
+            if(Array.isArray(data) && data.length > 0)setNotifLen(data.filter(data=>data.BatchMessage.split('~')[0].split(' ')[0] === DateTime().split(' ')[0]).length);
+        }
+    }
+
   useEffect(()=>{
     startTransition(()=>{
-        const fetchData = async() => {
-            const res = await fetchBatchMessageData(course);
-            const result = await fetchBatchToStudentMessageData(stdId);
-            if (res && res.message){
-                handleShowSnackbar('error',res.message);
-            }else if(res){
-                const resData = Array.isArray(res) && res.length > 0 && res.filter(data=>(data.Course === course && data.BatchName === batchName));
-                const data = !(result.message) ? resData && result && resData.concat(result) : resData;
-                setBatchData([...data].reverse());
-                if(Array.isArray(data) && data.length > 0)setNotifLen(data.filter(data=>data.BatchMessage.split('~')[0].split(' ')[0] === DateTime().split(' ')[0]).length);
-            }
-        }
         fetchData();
     })
   },[isLoading])
+
+  const make_refresh = async () => {
+    await fetchData();
+    setRefresh(true);
+    setTimeout(()=>{
+        setRefresh(false);
+    },10000)
+  }
 
   return (
     <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
         <img src='/images/V-Cube-Logo.png' alt='' width='12%' className='ml-[44%]' />
         <IconButton sx={{position : 'absolute'}} className='right-1 top-1' onClick={()=>setIsOpen(false)} ><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-1 right-12' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle variant='h5'>Your Notifications <NotificationsRounded sx={{fontSize : '30px'}} /></DialogTitle>
         <DialogContent className='w-[50rem] h-[40rem] overflow-y-auto' sx={{scrollbarWidth : 'none'}}>
             {Array.isArray(batchData) && batchData.map((data,index)=>{

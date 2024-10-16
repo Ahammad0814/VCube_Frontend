@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip, Typography } from '@mui/material';
-import { CancelRounded, CheckCircleRounded, CloseRounded, ReportOffRounded, ReportRounded } from '@mui/icons-material';
+import { CancelRounded, CheckCircleRounded, CloseRounded, ReplayRounded, ReportOffRounded, ReportRounded } from '@mui/icons-material';
 import { MailContext } from '../api/SendMail';
 import { getMonthsDifference } from './StudentProgressOverview';
 
@@ -8,6 +8,7 @@ const Reports = ({ isOpen, setIsOpen, handleShowSnackbar, setIsLoading, setRepor
     const { fetchReportData, patchReportData, deleteReportData } = useContext(MailContext);
     const [reportData, setReportData] = useState(null);
     const [change, setChange] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
     const getDays = (batchDate) => {
         const startDate = new Date(batchDate);
@@ -55,6 +56,13 @@ const Reports = ({ isOpen, setIsOpen, handleShowSnackbar, setIsLoading, setRepor
         }
     };
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
 
   return (
     <>
@@ -62,6 +70,9 @@ const Reports = ({ isOpen, setIsOpen, handleShowSnackbar, setIsLoading, setRepor
         <img src='/images/V-Cube-Logo.png' alt='' width='14%' className='ml-[43%]' />
         <IconButton onClick={()=>setIsOpen(false)} sx={{position : 'absolute'}} className='top-1 right-1'>
             <CloseRounded fontSize='large' />
+        </IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-1 right-12' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
         </IconButton>
         <DialogTitle variant='h5'>Reports <ReportRounded/></DialogTitle>
         {Array.isArray(reportData) && reportData.length > 0 ? 

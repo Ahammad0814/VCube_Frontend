@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { CloseRounded, DeleteForeverRounded, LinkOffRounded, LinkRounded, LocationOnRounded, Visibility, WorkRounded } from '@mui/icons-material';
+import { CloseRounded, DeleteForeverRounded, LinkOffRounded, LinkRounded, LocationOnRounded, ReplayRounded, Visibility, WorkRounded } from '@mui/icons-material';
 import { mui_colors } from '../ExternalData';
 import { PlacementsContext } from '../api/Placements';
 import { isTodayBetween } from '../student-info/PlacementNotifications';
@@ -10,7 +10,7 @@ const ViewJobAnnouncements = ({ isOpen, setIsOpen, selectedCourse, selectBatchna
   const [postsData, setPostsData] = useState([]);
   const [deletePost, setDeletePost] = useState(false);
   const [deletePostData, setDeletePostData] = useState(null);
-
+  const [refresh, setRefresh] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -18,6 +18,10 @@ const ViewJobAnnouncements = ({ isOpen, setIsOpen, selectedCourse, selectBatchna
     if (res && res.message){
       handleShowSnackbar('error',res.message);
     }else if (res){
+      if(Array.isArray(res) && res.length === 0){
+        handleShowSnackbar('error','No data found.');
+        return;
+      }
       const data = Array.isArray(res) && res.filter((item) => item.BatchName === selectBatchname);
       if(Array.isArray(data) && data.length > 0)setPostsData([...data].reverse());
     }
@@ -45,11 +49,22 @@ const ViewJobAnnouncements = ({ isOpen, setIsOpen, selectedCourse, selectBatchna
     fetchData();
   }
 
+  const make_refresh = async () => {
+    await fetchData();
+    setRefresh(true);
+    setTimeout(()=>{
+        setRefresh(false);
+    },10000)
+}
+
   return (
     <>
     <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
         <img src='/images/V-Cube-Logo.png' alt='' width='8%' className='ml-[46%]' />
         <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={handleClose}><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle className='flex items-center' variant='h5'>Posted Job Annoucements <WorkRounded sx={{marginLeft : '10px'}} /></DialogTitle>
         <DialogContent className='w-[75rem] max-h-[40rem] h-[40rem] grid grid-cols-2 gap-x-5 gap-y-5 overflow-y-auto place-content-start'>
           {Array.isArray(postsData) && postsData.length > 0 ? <>

@@ -41,6 +41,10 @@ const AssessmentsData = ({ isOpen, setIsOpen, image, name, phone, course, batchN
         if (res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             const weekly_data = res && res.filter(data=>data.Course === course && data.BatchName === batchName && data.WeeklyAssignment !== 'No');
             setNearestDate(getNearestDate(weekly_data));
             const data = res && res.filter(data=>data.Course === course && JSON.parse(data.Question).Month === selectedMonth && data.WeeklyAssignment === 'No');

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BatchContext } from '../api/batch';
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { DeleteForever, MessageRounded, Visibility } from '@mui/icons-material';
+import { DeleteForever, MessageRounded, ReplayRounded, Visibility } from '@mui/icons-material';
 import { mui_colors } from '../ExternalData';
 
 const ShowAdminMessages = ({ selectedCourse, selectedBatch, handleShowSnackbar, setIsLoading }) => {
@@ -9,6 +9,7 @@ const ShowAdminMessages = ({ selectedCourse, selectedBatch, handleShowSnackbar, 
     const [batchData, setBatchData] = useState([]);
     const [deleteMsgData, setDeleteMsgData] = useState(null);
     const [deleteMsg, setDeleteMsg] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchData = async() => {
         setIsLoading(true);
@@ -17,6 +18,10 @@ const ShowAdminMessages = ({ selectedCourse, selectedBatch, handleShowSnackbar, 
         if (res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             const data = Array.isArray(res) && res.length > 0 && res.filter(data=>(data.Course === 'All' || data.Course === selectedCourse) && (data.BatchName === 'All' || data.BatchName === selectedBatch));
             if(Array.isArray(data) && data.length > 0){
                 setBatchData([...data].reverse());
@@ -42,8 +47,19 @@ const ShowAdminMessages = ({ selectedCourse, selectedBatch, handleShowSnackbar, 
         fetchData();
     },[])
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
   return (
     <>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-8 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '28px'}} />
+        </IconButton>
         {Array.isArray(batchData) && batchData.length > 0 ?
         <DialogContent className='w-full h-[40rem] overflow-y-auto' sx={{scrollbarWidth : 'none'}}>
             {Array.isArray(batchData) && batchData.map((data,index)=>{

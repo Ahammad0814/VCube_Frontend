@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { ChatBubbleRounded, CloseRounded, DeleteForeverRounded, MarkChatReadRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
+import { ChatBubbleRounded, CloseRounded, DeleteForeverRounded, MarkChatReadRounded, ReplayRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
 import { mui_colors } from '../ExternalData';
 import { BatchContext } from '../api/batch';
 import { DateTime } from '../date-time';
@@ -10,6 +10,7 @@ const SentMessages = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, User, 
     const [messageData, setMessageData] = useState([]);
     const [deleteMsgData, setDeleteMsgData] = useState(null);
     const [deleteMsg, setDeleteMsg] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -17,6 +18,10 @@ const SentMessages = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, User, 
         if (results && results.message){
             handleShowSnackbar('error',results.message);
         }else if (results){
+            if(Array.isArray(results) && results.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             const user = User && User.split(' ')[0] === 'Placements' ? 'Placements Team' : `${selectedCourse} Team`;
             const data = Array.isArray(results) && results.filter(data=>data.BatchName === selectedBatch && data.BatchMessage.split('~')[1] === user);
             if(Array.isArray(data) && data.length > 0)setMessageData([...data].reverse());
@@ -42,11 +47,22 @@ const SentMessages = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, User, 
         }
     }
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
   return (
     <>
     <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
-        <img src='/images/V-Cube-Logo.png' width='8%' alt='' className='ml-[46%]'/>
+        <img src='/images/V-Cube-Logo.png' width='8%' alt='' className='ml-[46%]' />
         <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={()=>setIsOpen(false)}><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle variant='h5'>Messages You Sent <MarkChatReadRounded/></DialogTitle>
         <DialogContent className='w-[75rem] h-[40rem] max-h-[40rem] overflow-y-auto grid grid-cols-2 place-content-start gap-x-5 gap-y-5' sx={{scrollbarWidth : 'none'}}>
             {Array.isArray(messageData) && messageData.length > 0 ? <>

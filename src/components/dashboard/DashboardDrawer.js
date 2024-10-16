@@ -15,7 +15,7 @@ const DashboardDrawer = ({
   setOpenBatchOption, setBatchOption, setOpenCourseOption,
   setCourseOption, handleShowSnackbar, setPostJob, setPostedJob, setSendMsgToStd,
   setShowSendMsg, setStudentsFeedback, setMsgToBatch, setConfirmLogout, setUploadRecording,
-  setShowRecording, User, setDelete_Assessment, 
+  setShowRecording, User, setDelete_Assessment, view,
 }) => {
 
   const actions = {
@@ -103,7 +103,7 @@ const DashboardDrawer = ({
     }
   };
 
-  const iconLists = (userCourse === 'Placements') ? 
+  const iconLists = (userCourse === 'Placements' || (user === 'Super Admin' && view === 'Placements Dashboard')) ? 
     [
       <PostAddRounded sx={{ fontSize: '25px' }} />,
       <PreviewRounded />,
@@ -130,7 +130,7 @@ const DashboardDrawer = ({
       <SendRounded />, <MarkChatReadRounded />, <ReviewsRounded />, <FileDownloadRounded />
     ];
 
-  const drawerNames = (userCourse === 'Placements')
+  const drawerNames = (userCourse === 'Placements' || (user === 'Super Admin' && view === 'Placements Dashboard'))
     ? ['Job Opportunity Announcement', 'View Posted Opportunities', 'Send Message to Students', 'Show Sent Messages', 'Students Feedback']
     : (user === 'Super Admin')
     ? [

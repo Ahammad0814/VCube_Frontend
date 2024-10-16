@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { ChatBubbleRounded, CloseRounded, DeleteForeverRounded, MarkChatReadRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
+import { ChatBubbleRounded, CloseRounded, DeleteForeverRounded, MarkChatReadRounded, ReplayRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
 import { StudentsContext } from '../api/students';
 import { mui_colors } from '../ExternalData';
 
@@ -10,6 +10,7 @@ const SentMessagesForm = ({ isOpen, setIsOpen, image, gender, course, batchName,
   const [batchMsgData, setBatchMsgData] = useState([]);
   const [deleteMessage, setDeleteMessage] = useState([]);
   const [conrimationDialog, setConfirmationDialog] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -22,6 +23,10 @@ const SentMessagesForm = ({ isOpen, setIsOpen, image, gender, course, batchName,
         handleShowSnackbar('error',res.message);
       }
     }else if(res){
+      if(Array.isArray(res) && res.length === 0){
+        handleShowSnackbar('error','No data found.');
+        return;
+      }
       setBatchMsgData([]);
       let filteredData;
       if(isUser === 'Student'){
@@ -56,11 +61,22 @@ const SentMessagesForm = ({ isOpen, setIsOpen, image, gender, course, batchName,
     setConfirmationDialog(false);
   };
 
+  const make_refresh = async () => {
+    await fetchData();
+    setRefresh(true);
+    setTimeout(()=>{
+        setRefresh(false);
+    },10000)
+  }
+
   return (
     <>
     <Dialog open={isOpen} maxWidth='lg' sx={{zIndex : '700'}}>
         <img src='/images/V-Cube-Logo.png' alt='' width='12%' className='ml-[44%]' />
         <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={()=>setIsOpen(false)}><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle variant='h5'>Messages You Sent <MarkChatReadRounded sx={{fontSize : '30px', marginLeft : '10px'}} /></DialogTitle>
         {Array.isArray(batchMsgData) && batchMsgData.length > 0 ? (<DialogContent sx={{width : '50rem',scrollbarWidth : 'none'}} className='min-h-[33rem] max-h-[33rem] overflow-y-auto mb-3'>
             {isUser === 'Student' ? (Array.isArray(batchMsgData) && batchMsgData.map((data)=>(<>

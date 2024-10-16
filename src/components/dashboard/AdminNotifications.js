@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Badge, Box, Card, Dialog, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { CloseRounded, MessageRounded, NotificationsOffRounded, NotificationsRounded, Visibility } from '@mui/icons-material';
+import { CloseRounded, MessageRounded, NotificationsOffRounded, NotificationsRounded, ReplayRounded, Visibility } from '@mui/icons-material';
 import { BatchContext } from '../api/batch';
 import { DateTime } from '../date-time';
 import { mui_colors } from '../ExternalData';
@@ -8,12 +8,17 @@ import { mui_colors } from '../ExternalData';
 const AdminNotifications = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, handleShowSnackbar, setNotifLen }) => {
     const { fetchAdminMessageData } = useContext(BatchContext);
     const [batchData, setBatchData] = useState([]);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchData = async() => {
         const res = await fetchAdminMessageData();
         if (res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             const data = Array.isArray(res) && res.length > 0 && res.filter(data=>(data.Course === 'All' || data.Course === selectedCourse) && (data.BatchName === 'All' || data.BatchName === selectedBatch));
             if(Array.isArray(data) && data.length > 0){
                 setBatchData([...data].reverse());
@@ -26,10 +31,21 @@ const AdminNotifications = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, 
         fetchData();
     },[isOpen, selectedCourse, selectedBatch])
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
   return (
     <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
         <img src='/images/V-Cube-Logo.png' alt='' width='15%' className='ml-[42.5%]' />
         <IconButton sx={{position : 'absolute'}} className='right-1 top-1' onClick={()=>setIsOpen(false)} ><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-1 right-12' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle variant='h5'>Your Notifications <NotificationsRounded sx={{fontSize : '30px'}} /></DialogTitle>
         {Array.isArray(batchData) && batchData.length > 0 ? <DialogContent className='w-[50rem] h-[40rem] overflow-y-auto' sx={{scrollbarWidth : 'none'}}>
             {Array.isArray(batchData) && batchData.map((data,index)=>{

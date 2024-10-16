@@ -28,6 +28,10 @@ const ClassVedios = ({ isOpen, setIsOpen, JoiningDate, course, batchName, handle
         if (res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             if (Array.isArray(res) && res.length > 0){
                 const data = res.filter((data)=>`${data.Date.split('-')[1]} ${data.Date.split('-')[2]}` === selectedMonth && data.BatchName === batchName);
                 setVedioData(data);

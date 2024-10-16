@@ -142,7 +142,7 @@ const DrivePin = ({ isOpen, setIsOpen, handleShowSnackbar, setIsLoading, setIsVa
         <DialogContent className={`w-full ${forgot ? 'h-[30rem]' : 'h-[20rem]'} flex flex-col items-center justify-start`}>
             {!forgot ? <Box className='w-full h-full flex flex-col items-center justify-start'>
                 <SecurityRounded sx={{fontSize : '50px'}} color='primary' />
-                <Typography variant='h5' sx={{margin : '20px 0'}}>Hi Ahammad282</Typography>
+                <Typography variant='h5' sx={{margin : '20px 0'}}>Hi {user.Username}</Typography>
                 {user.Drive === 'Not Registered' ? 
                 <>
                     <Typography className='text-center' variant='h6'>Registration not found.</Typography><br/>

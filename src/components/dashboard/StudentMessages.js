@@ -2,17 +2,22 @@ import React, { useContext, useEffect, useState } from 'react'
 import { StudentsContext } from '../api/students';
 import { DateTime } from '../date-time';
 import { Avatar, Box, Card, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { CloseRounded, MessageRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
+import { CloseRounded, MessageRounded, ReplayRounded, SpeakerNotesOffRounded, Visibility } from '@mui/icons-material';
 
 const StudentMessages = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, handleShowSnackbar, setStdMsgLen, isLoading }) => {
     const { fetchStudentMessageData } = useContext(StudentsContext);
     const [stdMsgData, setStdMsgData] = useState([]);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchData = async () => {
         const res = await fetchStudentMessageData(selectedCourse);
         if(res && res.message){
             handleShowSnackbar('error',res.message);
         }else if(res){
+            if(Array.isArray(res) && res.length === 0){
+                handleShowSnackbar('error','No data found.');
+                return;
+            }
             const data = Array.isArray(res) && res.length > 0 && res.filter(data=>(data.BatchName === selectedBatch || selectedBatch === 'All') && JSON.parse(data.StudentMessage).MessageTo === `${selectedCourse} Team`);
             if(Array.isArray(data) && data.length > 0){
                 setStdMsgData([...data].reverse());
@@ -25,11 +30,20 @@ const StudentMessages = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, han
         fetchData();
     },[selectedBatch])
 
+    const make_refresh = async () => {
+        await fetchData();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
   return (
    <Dialog open={isOpen} maxWidth='lg' sx={{zIndex : '700'}}>
     <img src='/images/V-Cube-Logo.png' alt='' width='8%' className='ml-[46%]' />
     <DialogTitle variant='h5'>Students Messages <MessageRounded/></DialogTitle>
     <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={()=>setIsOpen(false)}><CloseRounded sx={{fontSize : '35px'}}/></IconButton>
+    <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}><ReplayRounded sx={{fontSize : '35px'}} /></IconButton>
     {Array.isArray(stdMsgData) && stdMsgData.length > 0 ? (<DialogContent sx={{width : '75rem',scrollbarWidth : 'none'}} className='min-h-[34rem] gap-3 max-h-[34rem] grid grid-cols-2 place-content-start overflow-y-auto mb-3'>
             {Array.isArray(stdMsgData) && stdMsgData.map((data)=>(<>
             <Card className='relative flex flex-row items-center justify-start mt-1 h-40' sx={{boxShadow : '0 0 5px rgba(0,0,0,0.5)'}}>

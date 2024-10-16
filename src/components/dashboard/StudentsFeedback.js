@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Box, Card, Dialog, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip, Typography } from '@mui/material';
-import { AccountCircleRounded, CloseRounded, ReviewsRounded, SpeakerNotesOffRounded } from '@mui/icons-material';
+import { AccountCircleRounded, CloseRounded, ReplayRounded, ReviewsRounded, SpeakerNotesOffRounded } from '@mui/icons-material';
 import { mui_colors } from '../ExternalData';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -13,6 +13,7 @@ const StudentsFeedback = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, ha
     const [f_data, setF_Data] = useState([]);
     const [sorting, setSorting] = useState(null);
     const [date, setDate] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
@@ -21,6 +22,10 @@ const StudentsFeedback = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, ha
             if (res && res.message) {
                 handleShowSnackbar('error', res.message);
             } else if (res) {
+                if(Array.isArray(res) && res.length === 0){
+                    handleShowSnackbar('error','No data found.');
+                    return;
+                }
                 const data = Array.isArray(res) 
                     ? res.filter((data) => data.BatchName === selectedBatch) 
                     : [];
@@ -95,10 +100,22 @@ const StudentsFeedback = ({ isOpen, setIsOpen, selectedCourse, selectedBatch, ha
         filters();
     }, [filters]);
 
+    const make_refresh = async () => {
+        await fetchData();
+        filters();
+        setRefresh(true);
+        setTimeout(()=>{
+            setRefresh(false);
+        },10000)
+    }
+
     return (
     <Dialog open={isOpen} maxWidth='lg' sx={{zIndex : '700'}}>
         <img src='/images/V-Cube-Logo.png' alt='' width='8%' className='ml-[46%]' />
         <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={handleClose}><CloseRounded sx={{fontSize : '35px'}}/></IconButton>
+        <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+        </IconButton>
         <DialogTitle className='flex items-center justify-between'><Typography variant='h5'>Students Feedback <ReviewsRounded/></Typography>
             <Box className='flex items-center justify-end w-[45%]'>
             {sorting && sorting === 'Date' && <Box className='w-[45%] mr-[5%]'>

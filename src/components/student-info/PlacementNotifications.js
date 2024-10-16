@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Card, Dialog, DialogContent, DialogTitle, IconButton, Link, Tooltip, Typography } from '@mui/material';
-import { CloseRounded, LinkOffRounded, LinkRounded, LocationOnRounded, Visibility, WorkRounded } from '@mui/icons-material';
+import { CloseRounded, LinkOffRounded, LinkRounded, LocationOnRounded, ReplayRounded, Visibility, WorkRounded } from '@mui/icons-material';
 import { mui_colors } from '../ExternalData';
 import { PlacementsContext } from '../api/Placements';
 
@@ -23,13 +23,17 @@ export const isTodayBetween = (startDateStr, endDateStr) => {
 const PlacementNotifications = ({ isOpen, setIsOpen, course, batchName, setIsLoading, handleShowSnackbar, setMailNotif, isLoading }) => {
     const { fetchPostsData } = useContext(PlacementsContext);
     const [postsData, setPostsData] = useState([]);
-  
+    const [refresh, setRefresh] = useState(false);
   
     const fetchData = async () => {
       const res = await fetchPostsData(course);
       if (res && res.message){
         handleShowSnackbar('error',res.message);
       }else if (res){
+        if(Array.isArray(res) && res.length === 0){
+          handleShowSnackbar('error','No data found.');
+          return;
+        }
         const data = Array.isArray(res) && res.filter((item) => item.BatchName === batchName);
         const len = Array.isArray(res) && res.filter(data=>isTodayBetween(data.From_Date.split(' ')[1], data.To_Date.split(' ')[1]));
         setMailNotif(len.length)
@@ -45,11 +49,22 @@ const PlacementNotifications = ({ isOpen, setIsOpen, course, batchName, setIsLoa
       setIsOpen(false);
     }
 
+    const make_refresh = async () => {
+      await fetchData();
+      setRefresh(true);
+      setTimeout(()=>{
+          setRefresh(false);
+      },10000)
+  }
+
     return (
       <>
       <Dialog open={isOpen} sx={{zIndex : '700'}} maxWidth='lg'>
           <img src='/images/V-Cube-Logo.png' alt='' width='8%' className='ml-[46%]' />
           <IconButton sx={{position : 'absolute'}} className='top-3 right-3' onClick={handleClose}><CloseRounded sx={{fontSize : '35px'}} /></IconButton>
+          <IconButton disabled={refresh} sx={{position : 'absolute'}} className='top-3 right-16' onClick={make_refresh}>
+            <ReplayRounded sx={{fontSize : '35px'}} />
+          </IconButton>
           <DialogTitle className='flex items-center' variant='h5'>Posted Job Annoucements <WorkRounded sx={{marginLeft : '10px'}} /></DialogTitle>
           <DialogContent className='w-[75rem] max-h-[40rem] h-[40rem] grid grid-cols-2 gap-x-5 gap-y-5 overflow-y-auto place-content-start'>
             {Array.isArray(postsData) && postsData.length > 0 ? <>
