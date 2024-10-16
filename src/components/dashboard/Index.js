@@ -75,8 +75,8 @@ const Dashboard = () => {
   const [batchAttData, setBatchAttData] = useState([]);
   const [postJob, setPostJob] = useState(false);
   const [postedJobs, setPostedJob] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedBatch, setSelectedBatch] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [importData, setImportData] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [batchAttendanceType, setBatchAttendanceType] = useState(null);

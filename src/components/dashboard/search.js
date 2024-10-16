@@ -5,10 +5,12 @@ import { AttributionRounded, RefreshRounded } from '@mui/icons-material';
 const Search = ({ user, courseData, batchData, selectedBatch, setSelectedBatch, selectedCourse, setSelectedCourse, userCourse, setShortLoading ,setTakeStdAtt, refreshData, setStdAttViewType, stdAttViewType }) => { 
     const [refreshed, setRefreshed] = useState(false);
     const [timer, setTimer] = useState(30);
-    
+
     useEffect(()=>{
-      setSelectedBatch(sessionStorage.getItem('SelectedBatch'));
-      setSelectedCourse(sessionStorage.getItem('SelectedCourse'));
+      const batch_Name = sessionStorage.getItem('SelectedBatch');
+      const course_Name = sessionStorage.getItem('SelectedCourse');
+      if(batch_Name)setSelectedBatch(batch_Name);
+      if(course_Name)setSelectedCourse(course_Name);
     },[selectedBatch, selectedCourse])
 
     const handleCourseChange = (e) => {
@@ -37,7 +39,7 @@ const Search = ({ user, courseData, batchData, selectedBatch, setSelectedBatch, 
     }, [timer, refreshed]);
 
   return (
-    <Box className="h-14 mt-4 mb-4 w-[95%] ml-[2.5%] flex items-center justify-between bg-transparent">
+    <Box className="h-[7%] mt-4 mb-4 w-[95%] ml-[2.5%] flex items-center justify-between bg-transparent">
       <Button endIcon={!refreshed && <RefreshRounded/>} variant='outlined' onClick={()=>{!refreshed && refreshData();setRefreshed(true)}}>Refresh {refreshed && `in ${timer < 10 ? `0${timer}` : `${timer}`}`}</Button>
       <Button variant="contained" startIcon={<AttributionRounded />} onClick={()=>setTakeStdAtt(true)}>Take Student Attendance</Button>
 
@@ -77,13 +79,10 @@ const Search = ({ user, courseData, batchData, selectedBatch, setSelectedBatch, 
             fontSize: '20px',
             },}}
             >
-          {selectedCourse && batchData && batchData.map((data)=>{
-              if(data.Course === selectedCourse){
-                return(
-                  <MenuItem value={data.BatchName}>{data.BatchName}</MenuItem>
-                )
-              }
-            })
+          {selectedCourse && batchData && batchData.map((data)=>(
+              (data.Course === selectedCourse) &&
+              <MenuItem value={data.BatchName}>{data.BatchName}</MenuItem>
+          ))
           }
           {selectedCourse && <MenuItem value="All">All Batches</MenuItem>}
         </Select>
