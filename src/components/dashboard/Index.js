@@ -317,8 +317,20 @@ const Dashboard = () => {
             setIsLoading={setIsLoading}
             setImportData={setImportData}
           />
-          <StudentForm open={stdFormOpen} setOpen={setStdFormOpen} selectedCourse={selectedCourse} selectedBatch={selectedBatch} isUser={'Super Admin'} />
-          {settingsOpen && <UserSettings settingsOpen={settingsOpen} setSettingsOpen={setSettingsOpen} handleShowSnackbar={handleShowSnackbar} refreshData={refreshData} />}
+          <StudentForm 
+            open={stdFormOpen} 
+            setOpen={setStdFormOpen} 
+            selectedCourse={selectedCourse} 
+            selectedBatch={selectedBatch} 
+            isUser={'Super Admin'}
+            refreshData={refreshData}
+          />
+
+          {settingsOpen && <UserSettings 
+            settingsOpen={settingsOpen} 
+            setSettingsOpen={setSettingsOpen} 
+            handleShowSnackbar={handleShowSnackbar} 
+            refreshData={refreshData} />}
 
           {openDrawer && <DashboardDrawer
             openDrawer={openDrawer}

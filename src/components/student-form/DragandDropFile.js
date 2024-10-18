@@ -5,13 +5,16 @@ import { CloudUploadOutlined, ArrowForward, TouchAppRounded, CheckCircleRounded,
 import { StudentsContext } from '../api/students';
 import { BatchContext } from '../api/batch';
 
-const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManually, handleShowSnackbar, setIsLoading, loading, selectedCourse, selectedBatch, isUser, handleClose, refreshData }) => {
+const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManually, handleShowSnackbar, setIsLoading, loading, selectedCourse, selectedBatch, isUser, handleClose, refreshData }) => {
   const { fetchStudentsData, postBulkStudentData, deleteBulkStudentData } = useContext(StudentsContext);
   const { fetchBatchData } = useContext(BatchContext);
   const [isFileError, setIsFileError] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteValue, setDeleteValue] = useState(null);
   const [deleteStdData, setDeleteStdData] = useState(false);
+  const [existData, setExistData] = useState([]);
+  const [stdExists, setStdExists] = useState(false);
+  const [filterData, setFilterData] = useState([]);
   
   useEffect(()=>{
     setIsFileError(fileError);
@@ -68,27 +71,29 @@ const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManual
     if(fetchData && fetchData.message){
       handleShowSnackbar('error',fetchData.message);
     }else if (fetchData){
-      const studentData = []
+      const studentData = [];
+      const existedData = [];
       await data && (async () => {
         for (const std_Data of data) {
             const stdFound = fetchData && fetchData.some(stdData => 
                 parseInt(JSON.parse(stdData.Personal_Info).Phone) === std_Data.Phone || 
                 JSON.parse(stdData.Personal_Info).Email === std_Data.Email
             );
+            if(stdFound)existedData.push(std_Data);
             if (!stdFound) {
                 const sendData = {
                     Name: std_Data.Name,
                     Email: std_Data.Email,
                     Phone: std_Data.Phone,
                     Course: selectedCourse,
-                    BatchName: std_Data.BatchName,
+                    BatchName: selectedBatch,
                     Joining_Date: std_Data.JoiningDate,
                     Personal_Info: JSON.stringify({
                         Joining_Date: std_Data.JoiningDate,
                         Image : std_Data.Gender === 'Male' ? '/images/Empty-Men-Icon.png' : '/images/Empty-Women-Icon.png',
                         Course: selectedCourse,
                         Name: std_Data.Name,
-                        BatchName: std_Data.BatchName,
+                        BatchName: selectedBatch,
                         Email: std_Data.Email,
                         Phone: std_Data.Phone,
                         Gender: std_Data.Gender
@@ -99,13 +104,19 @@ const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManual
             await new Promise(resolve => setTimeout(resolve, 10));
             setIsLoading(true);
         }
+        if(studentData && studentData.length > 0){
+          if(studentData.length !== data.length)handleShowSnackbar('warning','Some student data already exists.');
+          if(existedData && existedData.length > 0){
+            setExistData(existedData);
+            setStdExists(true);
+            setFilterData(studentData);
+          }else{
+            filterStdData(studentData);
+          }
+        }else{
+          handleShowSnackbar('error','Student data not found or already exists.');
+        }
         })();
-      if(studentData && studentData.length > 0){
-        if(studentData.length !== data.length)handleShowSnackbar('warning','Duplicate Student Data Found.');
-        filterStdData(studentData);
-      }else{
-        handleShowSnackbar('error','No Student Data found.')
-      }
     }
   };
 
@@ -126,6 +137,8 @@ const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManual
       handleShowSnackbar('warning','Duplicate Student Data Found in Uploaded File.');
     }
     postStdData(uniqueStudentData);
+    setExistData([]);
+    setFilterData([]);
   };
 
   const postStdData = async (data) => {
@@ -134,9 +147,9 @@ const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManual
     if(res && res.message){
       handleShowSnackbar('error',res.message);
     }else if (res === true){
-      refreshData();
       handleShowSnackbar('success','Student Data Imported Successfully.');
       handleClose();
+      refreshData();
     }
   }
 
@@ -252,8 +265,35 @@ const DragDropUpload = ({ onDrop, fileData, fileName, fileError, setUploadManual
         </Box>}
       </DialogActions>
     </Dialog>
+
+    <Dialog open={stdExists} sx={{zIndex : '910'}} maxWidth='lg'>
+      <img src='/images/V-Cube-Logo.png' width='12%' className='ml-[44%]' />
+      <DialogTitle>The following Student Data already exists.</DialogTitle>
+      <DialogContent className='w-[50rem] h-[40rem]'>
+        <Typography color='error' variant='h6' className='w-full text-center'>Note: This data will not be Imported.</Typography>
+        <Box className='w-full h-[10%] flex items-center justify-around'>      
+          <Typography sx={{fontWeight : 'bold'}} className='w-[5%] text-center'>S.No</Typography>          
+          <Typography sx={{fontWeight : 'bold'}} className='w-[29%] text-center'>Name</Typography>
+          <Typography sx={{fontWeight : 'bold'}} className='w-[37%] text-center'>Email</Typography>
+          <Typography sx={{fontWeight : 'bold'}} className='w-[29%] text-center'>BatchName</Typography>
+        </Box>
+        <Box className='flex flex-col items-center justify-start overflow-auto' sx={{scrollbarWidth : 'thin'}}>
+          {(Array.isArray(existData) && existData.length > 0) && existData.map((data, index) => 
+            <Box className='w-full h-[10%] flex items-center justify-around mt-1 mb-1' key={index}>
+              <Typography className='w-[5%] text-center'>{index + 1}</Typography>
+              <Typography className='w-[29%] text-center'>{data.Name}</Typography>
+              <Typography className='w-[37%] text-center'>{data.Email}</Typography>
+              <Typography className='w-[29%] text-center'>{data.BatchName}</Typography>
+            </Box>)}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button variant='outlined' onClick={()=>{setStdExists(false);setExistData([]);setFilterData([])}}>Cancel Import</Button>
+        <Button variant='contained' onClick={()=>{filterStdData(filterData);setStdExists(false)}}>Continue to Import Data</Button>
+      </DialogActions>
+    </Dialog>
     </>
   );
 };
 
-export default DragDropUpload;
+export default DragAndDropList;
