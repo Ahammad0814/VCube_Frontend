@@ -36,6 +36,8 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
         setIsLoading(false);
     }
 
+    console.log(selfData)
+
     const sortStudents = (students) => {
         return students.sort((a, b) => {
             if (b.Score !== a.Score) {
@@ -98,29 +100,29 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
                 ))}
             </Box>
             <Divider/>
-            <Box className={`w-full h-[${self ? '90%' : '75%'}] overflow-auto`} sx={{scrollbarWidth : 'none'}}>
+            <Box className='w-full overflow-auto' sx={{height : self ? '90%' : '78%', scrollbarWidth : 'none'}}>
                 {Array.isArray(studentData) && studentData.length > 0 ? studentData.map((data,index)=>(
                     studentData.findIndex((data)=>data.StudentId === stdId && data.Name === `${name}~${phone}`) !== index &&
                     <>
-                    <Box className='w-full h-[20%] flex items-center justify-between'>
-                    <Typography className='w-[15%] text-center'>{index + 4}</Typography>
-                    <Typography className='w-[70%] text-start flex items-center pl-2'>
+                    <Box className={`w-full h-[${self ? '15%' : '17%'}] flex items-center justify-between`}>
+                    <Typography className='w-[15%] h-full flex items-center justify-center'>{index + 4}</Typography>
+                    <Typography className='w-[70%] h-full text-start flex items-center pl-2'>
                         <img src={data.Image} alt='' width='30px' className='h-[30px] mr-5 rounded-full object-contain border-[1px] border-slate-300' />
                         <Typography variant='span'>{data.Name.split('~')[0]}</Typography>
                     </Typography>
-                    <Typography className='w-[15%] text-center'>{data.Score}</Typography>
+                    <Typography className='w-[15%] h-full flex items-center justify-center'>{data.Score}</Typography>
                     </Box>
                     <Divider/>
                     </>
                 )) : <></>}
             </Box>
             {!self && selfData !== null && selfData ? 
-            <Box className='w-full h-[15%]'>
+            <Box className='w-full h-[14%]'>
                 <Box className='w-full h-full flex items-center justify-between bg-[#1976d2] text-white'>
                     <Typography className='w-[15%] text-center'>{Array.isArray(studentData) && studentData.length > 0 ? studentData.findIndex((data)=>data.StudentId === stdId && data.Name === `${name}~${phone}`) + 4 : undefined}</Typography>
                     <Typography className='w-[70%] text-start flex items-center pl-2'>
                         <img src={selfData.Image} alt='' width='30px' className='h-[30px] mr-5 bg-white rounded-full object-contain border-[1px] border-slate-300' />
-                        <Typography variant='span'>{selfData.Name.split('~')[0]}</Typography>
+                        <Typography variant='span'>{selfData.Name && selfData.Name.split('~')[0]}</Typography>
                     </Typography>
                     <Typography className='w-[15%] text-center'>{selfData.Score}</Typography>
                 </Box>
