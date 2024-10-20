@@ -62,6 +62,8 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
         }
     }
 
+    console.log(selfData,"<------------")
+
   return (
     <>
     <FormControl sx={{position : 'absolute'}} className='top-48 right-10 w-1/5'>
@@ -114,7 +116,7 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
                     </>
                 )) : <></>}
             </Box>
-            {!self && selfData !== null ? 
+            {!self && selfData !== null && selfData ? 
             <Box className='w-full h-[15%]'>
                 <Box className='w-full h-full flex items-center justify-between bg-[#1976d2] text-white'>
                     <Typography className='w-[15%] text-center'>{Array.isArray(studentData) && studentData.length > 0 ? studentData.findIndex((data)=>data.StudentId === stdId && data.Name === `${name}~${phone}`) + 4 : undefined}</Typography>

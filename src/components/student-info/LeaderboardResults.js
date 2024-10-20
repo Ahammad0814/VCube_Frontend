@@ -119,7 +119,8 @@ const LeaderboardResults = ({ isOpen, setIsOpen, stdId, course, batchName, handl
                     <Divider/>
                     </>)) : <></>}
                 </Box>
-                {!isSelf && selfData ? <Box className='w-full h-[15%]'>
+                {!isSelf && selfData ? 
+                <Box className='w-full h-[15%]'>
                     <Box className='w-full h-full flex items-center justify-between bg-[#1976d2] text-white'>
                         <Typography className='w-[15%] text-center'>{Array.isArray(studentData) && studentData.length > 0 ? studentData.findIndex(data => data.Self) + 4 : undefined}</Typography>
                         <Typography className='w-[70%] text-start flex items-center pl-2'>

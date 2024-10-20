@@ -21,6 +21,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResultPopUp, hideQuestion, isSql, full_Screen, setTabValue, questionId, name, course, batchName, isUser, updateScore, setTime_Up, assignmentScore }) => {
     const { runCode, executeCode } = useContext(ExecuteCodeContext);
     const { getStudentAttendanceById, postStudentAttendance } = useContext(StudentsContext);
+    const [disp, setDisp] = useState(false);
     const code = useRef({
         javascript: '// Write your JavaScript code here',
         python: '# Write your Python code here',
@@ -235,6 +236,14 @@ const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResu
         })
     },[])
 
+    const sanitizedCode = () => {
+        return DOMPurify.sanitize(code.current[language]);
+    };
+
+    useEffect(() => {
+        const safeCode = sanitizedCode();
+    }, [disp]);
+
     const formatTime = (time) => String(time).padStart(2, '0');
 
     const actions = [
@@ -343,7 +352,7 @@ const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResu
             language={language}
             value={code.current[language]}
             options={{ fontSize: size }}
-            onChange={(value) => code.current[language] = DOMPurify.sanitize(value)}
+            onChange={(value) => {code.current[language] = value; setDisp(!disp)}}
             theme="vs-dark"
         />
         </Box>

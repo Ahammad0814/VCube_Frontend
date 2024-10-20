@@ -31,8 +31,9 @@ const StudentAttendanceForm = ({ isOpen, setIsOpen, stdData, handleShowSnackbar,
 
     const handleSubmit = async() => {
         if(!checkedList || (checkedList && checkedList.length === 0)){
-            handleShowSnackbar('error','Select alteast one option to add Attendance.');
+            handleShowSnackbar('error','Select alteast one option to take an Attendance.');
         }else{
+            setIsOpen(false);
             setIsLoading(true);
             const dataArr = []
             for (const std of stdData) {
