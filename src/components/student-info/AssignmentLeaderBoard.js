@@ -62,8 +62,6 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
         }
     }
 
-    console.log(selfData,"<------------")
-
   return (
     <>
     <FormControl sx={{position : 'absolute'}} className='top-48 right-10 w-1/5'>
@@ -100,11 +98,11 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
                 ))}
             </Box>
             <Divider/>
-            <Box className={`w-full h-[${self ? 90 : 75}%] overflow-auto`} sx={{scrollbarWidth : 'none'}}>
+            <Box className={`w-full h-[${self ? '90%' : '75%'}] overflow-auto`} sx={{scrollbarWidth : 'none'}}>
                 {Array.isArray(studentData) && studentData.length > 0 ? studentData.map((data,index)=>(
                     studentData.findIndex((data)=>data.StudentId === stdId && data.Name === `${name}~${phone}`) !== index &&
                     <>
-                    <Box className='w-full h-[17%] flex items-center justify-between'>
+                    <Box className='w-full h-[20%] flex items-center justify-between'>
                     <Typography className='w-[15%] text-center'>{index + 4}</Typography>
                     <Typography className='w-[70%] text-start flex items-center pl-2'>
                         <img src={data.Image} alt='' width='30px' className='h-[30px] mr-5 rounded-full object-contain border-[1px] border-slate-300' />
