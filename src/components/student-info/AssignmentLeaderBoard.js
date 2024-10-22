@@ -36,8 +36,6 @@ const AssignmentLeaderBoard = ({ stdId, name, phone, course, batchName, nearestD
         setIsLoading(false);
     }
 
-    console.log(selfData)
-
     const sortStudents = (students) => {
         return students.sort((a, b) => {
             if (b.Score !== a.Score) {
