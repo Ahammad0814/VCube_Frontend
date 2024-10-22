@@ -44,10 +44,12 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
     const batchData = await fetchBatchData(selectedCourse);
     if (batchData && batchData.message){
       handleShowSnackbar('error',batchData.message);
+      setIsLoading(false);
     }else if(batchData && batchData.length > 0){
       checkData(batchData);
     }else{
-      handleShowSnackbar('error','Something went wrong. Please try again later.')
+      handleShowSnackbar('error','Something went wrong. Please try again later.');
+      setIsLoading(false);
     }
   };
 
@@ -55,11 +57,9 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
     const found = await fileData && fileData.every((stdData) => {
       return data && data.some(batchData => stdData.BatchName === batchData.BatchName);
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     if(!found){
       handleShowSnackbar('error','Batch not found. Please add a batch before adding the student.');
+      setIsLoading(false);
     }else if(found){
       setIsLoading(true);
       checkStd(fileData);
@@ -101,7 +101,6 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
                 };
                 studentData.push(sendData);
             }
-            await new Promise(resolve => setTimeout(resolve, 10));
             setIsLoading(true);
         }
         if(studentData && studentData.length > 0){
@@ -115,6 +114,7 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
           }
         }else{
           handleShowSnackbar('error','Student data not found or already exists.');
+          setIsLoading(false);
         }
         })();
     }
@@ -131,7 +131,6 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
             uniqueStudentData.push(value);
         }
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 10));
     };
     if(studentData.length !== uniqueStudentData.length){
       handleShowSnackbar('warning','Duplicate Student Data Found in Uploaded File.');
