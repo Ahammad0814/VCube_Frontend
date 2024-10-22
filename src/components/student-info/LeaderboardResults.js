@@ -108,7 +108,7 @@ const LeaderboardResults = ({ isOpen, setIsOpen, stdId, course, batchName, handl
                 <Box className={`w-full overflow-auto`} sx={{height : isSelf ? '90%' : '78%', scrollbarWidth : 'none'}}>
                     {Array.isArray(studentData) && studentData.length > 0 ? studentData.map((data,index)=>(
                     !data.Self && <>
-                    <Box className={`w-full h-[${isSelf ? '15%' : '17%'}] flex items-center justify-between`}>
+                    <Box className={`w-full flex items-center justify-between`} sx={{height : isSelf ? '15%' : '16%'}}>
                     <Typography className='w-[15%] text-center'>{index + 4}</Typography>
                     <Typography className='w-[70%] text-start flex items-center pl-2'>
                         <img src={data.Image} alt='' width='30px' className='h-[30px] mr-5 rounded-full object-contain border-[1px] border-slate-300' />
@@ -120,7 +120,7 @@ const LeaderboardResults = ({ isOpen, setIsOpen, stdId, course, batchName, handl
                     </>)) : <></>}
                 </Box>
                 {!isSelf && selfData ? 
-                <Box className='w-full h-[14%]'>
+                <Box className='w-full h-[15%]'>
                     <Box className='w-full h-full flex items-center justify-between bg-[#1976d2] text-white'>
                         <Typography className='w-[15%] text-center'>{Array.isArray(studentData) && studentData.length > 0 ? studentData.findIndex(data => data.Self) + 4 : undefined}</Typography>
                         <Typography className='w-[70%] text-start flex items-center pl-2'>
