@@ -281,7 +281,7 @@ const StudentInfo = () => {
     { icon: <Edit />, name: 'Edit Details', onClick: () => {setDialogState(prev => ({ ...prev, editStdDetails: true }));setEditDetails(true)} },
     { icon: <Link href={studentData.personal.Resume} download={`VCube-${studentData.personal.Name}-${studentData.personal.Course}-${studentData.personal.BatchName}.pdf`} ><SimCardDownloadRounded /></Link>, name: 'Download Resume' },
     isUser.split(' ')[0] !== 'Placements'  && { icon: <ContentPasteRounded />, name: 'Assignments', onClick: () => setDialogState(prev => ({ ...prev, assessmentDialog: true })) },
-    isUser === 'Student' && { icon: <CodeRounded />, name: 'Code Editor', onClick: () => setDialogState(pre => ({ ...pre, practice_CodeEditor: true })) },
+    { icon: <CodeRounded />, name: 'Code Editor', onClick: () => setDialogState(pre => ({ ...pre, practice_CodeEditor: true })) },
     isUser === 'Student' && { icon: <SmartDisplayRounded />, name: 'Class Recordings', onClick: ()=> setDialogState(pre => ({ ...pre, classVedio: true })) },
     { icon: <SmsRounded />, name: 'Messages you sent', onClick: () => setDialogState(prev => ({ ...prev, sentMessageForm: true })) },
     { icon: <ThumbUpAltRounded />, name: 'Feedback Form', onClick: () => setDialogState(prev => ({ ...prev, feedbackForm: true })) },
@@ -501,6 +501,7 @@ const StudentInfo = () => {
                 configs={studentData.config}
                 fetchStdData={fetchData}
                 stdId={stdId}
+                isUser={isUser}
           />}
           {dialogState.classVedio && <ClassVedios 
                 isOpen={dialogState.classVedio} 

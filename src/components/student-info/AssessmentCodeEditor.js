@@ -42,7 +42,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
     const [full_Screen, setFull_Screen] = useState(true);
     const [popUp, setPopUp] = useState(false);
     const [timeoutId, setTimeoutId] = useState(null);
-    const [seconds, setSeconds] = useState(10);
+    const [seconds_, set_Seconds] = useState(10);
     const weekly_Assignment = sessionStorage.getItem('Weekly Assignment');
     const [questions_Data, setQuestions_Data] = useState(weekly_Assignment === 'True' || weekly_Assignment=== 'Past' ? solveAssessmentData[0] : solveAssessmentData);
     const [time_Up, setTime_Up] = useState(false);
@@ -50,6 +50,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
     const values = Object.values(assignmentScore);
     const score_Sum = values.reduce((acc, value) => acc + value, 0);
     const score_Length = Array.isArray(solveAssessmentData) ? solveAssessmentData.length : 0;
+    const [minutes, setMinutes] = useState(0);
 
     const postResults = async () => {
         const getData = await fetchResults();
@@ -145,7 +146,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
     };
 
     const startTimeout = () => {
-    setSeconds(10);
+    set_Seconds(10);
     if (timeoutId) {
         clearTimeout(timeoutId);
     }
@@ -185,7 +186,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
 
         if (popUp) {
             intervalId = setInterval(() => {
-            setSeconds(prev => {
+            set_Seconds(prev => {
                 if (prev > 0) {
                 return prev - 1;
                 } else {
@@ -205,7 +206,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
 
     useEffect(() => {
     if (!popUp) {
-        setSeconds(10);
+        set_Seconds(10);
     }
     }, [popUp]);
 
@@ -213,7 +214,7 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
         isUser === 'Student' && await setItem();
         setIsOpen(false);
         setPopUp(false);
-        setSeconds(10);
+        set_Seconds(10);
     }
 
     return (
@@ -224,11 +225,11 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
                                 handleExitFullScreen={handleExitFullScreen} resultPopUp={resultPopUp} setResultPopUp={setResultPopUp} isUser={isUser}
                                 hideQuestion={hideQuestion} setHideQuestion={setHideQuestion} handleFullScreen={handleFullScreen} handleShowSnackbar={handleShowSnackbar}
                                 setQuestions_Data={setQuestions_Data} solveAssessmentData={solveAssessmentData} score={score_Sum > 0 && score_Length > 0 ? (score_Sum / (score_Length * 100)) * 100 : 0}
-                                scoreData={assignmentScore} postResults={postResults} setIsOpen={setIsOpen} time_Up={time_Up} />
+                                scoreData={assignmentScore} postResults={postResults} setIsOpen={setIsOpen} time_Up={time_Up} minutes={minutes} />
             <CodeEditor setResults={results}
                         test_Cases={questions_Data && JSON.parse(questions_Data.Test_Cases)}
                         stdId={stdId} handleShowSnackbar={handleShowSnackbar} setTime_Up={setTime_Up}
-                        setResultPopUp={setResultPopUp} hideQuestion={hideQuestion} assignmentScore={assignmentScore}
+                        setResultPopUp={setResultPopUp} hideQuestion={hideQuestion} minutes={minutes} setMinutes={setMinutes}
                         isSql={questions_Data && JSON.parse(questions_Data.Question).SQL === 'Yes'}
                         full_Screen={full_Screen} setTabValue={setTabValue} questionId={questions_Data && questions_Data.id}
                         name={name} course={course} batchName={batchName} isUser={isUser} updateScore={updateScore} />
@@ -242,11 +243,11 @@ const AssessmentCodeEditor = ({ isOpen, setIsOpen, stdId, handleShowSnackbar, so
             If you exit the assignment before completing it,<br/>you will be disqualified,<br/>your submission will not be counted, and you cannot reenter.
         </Typography>}
         <Typography sx={{margin : '20px 0'}} >Please go to fullscreen and complete the assignment before the timer ends.</Typography>
-        <Typography variant='h4' className='w-full text-center'>{seconds < 10 ? `0${seconds}` : seconds}s</Typography>
+        <Typography variant='h4' className='w-full text-center'>{seconds_ < 10 ? `0${seconds_}` : seconds_}s</Typography>
         </DialogContent>
         <DialogActions>
         <Button variant='outlined' onClick={handleExit}>Exit</Button>
-        <Button variant='contained' onClick={()=>{handleFullScreen();setPopUp(false);setSeconds(10)}} >Back to Full Screen</Button>
+        <Button variant='contained' onClick={()=>{handleFullScreen();setPopUp(false);set_Seconds(10)}} >Back to Full Screen</Button>
         </DialogActions>
     </Dialog>
     </>

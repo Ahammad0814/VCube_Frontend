@@ -6,11 +6,11 @@ import { StudentsAuthContext } from '../api/StudentsAuth';
 const StudentConfigForm = ({ handleShowSnackbar, isOpen, setIsOpen, fetchStdData, stdId }) => {
     const { postStudentConfigs } = useContext(StudentsAuthContext);
     const [student_config, setStudent_config] = useState({
-        host: 'localhost',
+        host: '',
         database: '',
         username: '',
         password: '',
-        port: '3306'
+        port: ''
     });
     const [isSubmit, setIsSubmit] = useState(false);
 
@@ -48,11 +48,11 @@ const StudentConfigForm = ({ handleShowSnackbar, isOpen, setIsOpen, fetchStdData
     const handleClose = () => {
         setIsOpen(false);
         setStudent_config({
-            host: 'localhost',
+            host: '',
             database: '',
             username: '',
             password: '',
-            port: '3306'
+            port: ''
         })
         setIsSubmit(false);
     };
@@ -62,8 +62,8 @@ const StudentConfigForm = ({ handleShowSnackbar, isOpen, setIsOpen, fetchStdData
       <DialogTitle variant='h5'>Add Database Configurations</DialogTitle>
       <DialogContent className='w-[43rem] h-[30rem]'>
         <Typography color='error' gutterBottom className='text-center'>
-          Note: For security reasons, please create and use the sample database configurations for practice and assignments. 
-          Do not use your personal database credentials.
+          Note: Your database configurations are securely encrypted, ensuring that no one—not even our team—can access or read them. 
+          Your data security is our priority!
         </Typography>
         <Box className='w-[80%] h-80 ml-[10%] flex flex-col items-center justify-between mt-10'>
           <TextField

@@ -322,7 +322,7 @@ const Dashboard = () => {
             setOpen={setStdFormOpen} 
             selectedCourse={selectedCourse} 
             selectedBatch={selectedBatch} 
-            isUser={'Super Admin'}
+            isUser={isUser}
             refreshData={refreshData}
           />
 

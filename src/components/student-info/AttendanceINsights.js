@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { LineChart } from '@mui/x-charts';
-import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
 import { StudentAttendanceCalendar } from './AddAtendanceCalender';
 import { CalendarMonthRounded, ChecklistRounded } from '@mui/icons-material';
 import { StudentsContext } from '../api/students';
@@ -172,7 +172,10 @@ const AttendanceINsights = ({ batchAttendanceData, stdAttendanceData, selectedYe
           height={300}
         />
       {selectedYear && <Box className='w-[900px] -mt-5 flex flex-row items-center justify-between mb-10'>
-        {Array.isArray(batchDays) && batchDays.map((value,index)=>(<IconButton key={index} onClick={(e)=>handleClick(e,index,value)} sx={{width : '40px',height : '40px',display : 'flex', alignItems : 'center', justifyContent : 'center'}}>{value}</IconButton>))}
+        {Array.isArray(batchDays) && batchDays.map((value,index)=>(
+          <Tooltip title='View Monthly Attendance Calendar' arrow>
+            <IconButton key={index} onClick={(e)=>handleClick(e,index,value)} sx={{width : '40px',height : '40px',display : 'flex', alignItems : 'center', justifyContent : 'center'}} color='primary'>{value}</IconButton>
+          </Tooltip>))}
       </Box>}
       <Box className='w-[80%] flex flex-row items-center justify-evenly mt-5'>
       <Box className='w-[30%] flex flex-row items-center justify-between'>

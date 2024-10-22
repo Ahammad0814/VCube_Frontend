@@ -84,14 +84,6 @@ const PracticeCodeEditor = ({ isOpen, setIsOpen, handleShowSnackbar, configs, fe
             }
         });
     }, [results]);
-
-    const sanitizedCode = () => {
-        return DOMPurify.sanitize(code.current[language]);
-    };
-
-    useEffect(() => {
-        const safeCode = sanitizedCode();
-    }, [disp]);
     
 
     const VisuallyHiddenInput = styled('input')({
@@ -293,7 +285,7 @@ const PracticeCodeEditor = ({ isOpen, setIsOpen, handleShowSnackbar, configs, fe
                 language={tabValue === 0 ? 'html' : tabValue === 1 ? 'css' : 'javascript'}
                 value={code.current[tabValue === 0 ? 'html' : tabValue === 1 ? 'css' : 'js']}
                 options={{ fontSize: size }}
-                onChange={(value) => {code.current[tabValue === 0 ? 'html' : tabValue === 1 ? 'css' : 'js'] = value; setDisp(!disp)} }
+                onChange={(value) => {code.current[tabValue === 0 ? 'html' : tabValue === 1 ? 'css' : 'js'] = DOMPurify.sanitize(value); setDisp(!disp)} }
                 theme="vs-dark"
             />
             :
@@ -303,7 +295,7 @@ const PracticeCodeEditor = ({ isOpen, setIsOpen, handleShowSnackbar, configs, fe
                 language={language}
                 value={code.current[language]}
                 options={{ fontSize: size }}
-                onChange={(value) => {code.current[language] = value; setDisp(!disp)} }
+                onChange={(value) => {code.current[language] = DOMPurify.sanitize(value); setDisp(!disp)} }
                 theme="vs-dark"
                 />}
             </Box>

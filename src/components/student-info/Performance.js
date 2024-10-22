@@ -78,7 +78,7 @@ const Performance = ({ batchAttendanceData, stdAttendanceData, stdId, name, phon
 Performance Overview:
 
   • Out of ${batchCount[0]} Classess Attended ${studentCount[0]}
-  • Out of ${batchCount[1]} Mock Tests Attended ${studentCount[1]}
+  • Out of ${batchCount[1]} Weekly Tests Attended ${studentCount[1]}
   • Out of ${batchCount[2]} Interview Attended ${studentCount[2]}
   • Assignments Solved : ${assignments}
   • Weekly Test Score : ${studentScore}

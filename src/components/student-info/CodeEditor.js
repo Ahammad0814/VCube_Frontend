@@ -18,7 +18,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResultPopUp, hideQuestion, isSql, full_Screen, setTabValue, questionId, name, course, batchName, isUser, updateScore, setTime_Up, assignmentScore }) => {
+const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResultPopUp, hideQuestion, isSql, full_Screen, 
+                        setTabValue, questionId, name, course, batchName, isUser, updateScore, setTime_Up, minutes, setMinutes, }) => {
     const { runCode, executeCode } = useContext(ExecuteCodeContext);
     const { getStudentAttendanceById, postStudentAttendance } = useContext(StudentsContext);
     const [disp, setDisp] = useState(false);
@@ -44,7 +45,6 @@ const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResu
     const [keys, setKeys] = useState([]);
     const [tab_Value, set_Tab_Value] = useState(0);
     const [hours, setHours] = useState(weekly_Assignment === 'True' || weekly_Assignment === 'Past' ? 1 : 0);
-    const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
     const [loading1, setLoading1] = useState(false);
     const [loading2, setLoading2] = useState(false);
@@ -161,6 +161,7 @@ const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResu
                 output.current = `Error: ${res.response ? res.response.data.error : res.message}`;
                 setResults.current = {'status' : 'Failed', 'message' : res.response ? res.response.data.error : res.message};
             }else if(res){
+                console.log(res.data);
                 setResults.current = res.data;
                 const resul = res.data.results.filter((data)=>data.status === 'pass');
                 if(weekly_Assignment === 'True' || weekly_Assignment === 'Past')updateScore(questionId, (resul.length / test_Cases.length) * 100);
@@ -265,7 +266,7 @@ const CodeEditor = ({ setResults, test_Cases, stdId, handleShowSnackbar, setResu
     ];
 
     return (
-    <Box className={`${hideQuestion ? 'w-[70%]' : 'w-1/2'} ${(minutes === 29) || minutes === 4 || minutes === 0 ? 'blink-background' : ''} h-full bg-white rounded-md pt-1 pr-2 pl-2 border-2 border-gray-200`}>
+    <Box className={`${hideQuestion ? 'w-[70%]' : 'w-1/2'} ${(minutes === 29 || minutes === 4 || minutes === 0) && (weekly_Assignment === 'True' || weekly_Assignment === 'Past') ? 'blink-background' : ''} h-full bg-white rounded-md pt-1 pr-2 pl-2 border-2 border-gray-200`}>
         <Box className='relative flex items-center justify-center h-12'>
             <SpeedDial
             ariaLabel="Menu SpeedDial"

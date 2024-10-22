@@ -2,7 +2,9 @@ import React, { startTransition, useContext, useEffect, useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Dialog, DialogActions, DialogContent, Divider, IconButton, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import { CancelRounded, CheckCircleRounded, CheckRounded, ExpandMore, KeyboardTabRounded, LogoutRounded, PsychologyAltRounded, PublishedWithChangesRounded, WorkspacePremiumRounded, ZoomInMapRounded, ZoomOutMapRounded } from '@mui/icons-material';
 
-const CodingQuestionPage = ({isUser, results, questionData, tabValue, setTabValue, handleExitFullScreen, resultPopUp, setResultPopUp, hideQuestion, setHideQuestion, handleFullScreen, setQuestions_Data, solveAssessmentData, score, scoreData, postResults, setIsOpen, time_Up, handleShowSnackbar }) => {
+const CodingQuestionPage = ({isUser, results, questionData, tabValue, setTabValue, handleExitFullScreen, resultPopUp, 
+                              setResultPopUp, hideQuestion, setHideQuestion, handleFullScreen, setQuestions_Data, solveAssessmentData, 
+                              score, scoreData, postResults, setIsOpen, time_Up, handleShowSnackbar, minutes, }) => {
   const [expand, setExpand] = useState(null);
   const [submit, setSubmit] = useState(false);
   const weekly_Assignment = sessionStorage.getItem('Weekly Assignment');
@@ -44,7 +46,7 @@ const CodingQuestionPage = ({isUser, results, questionData, tabValue, setTabValu
 
   return (
     <>
-    <Box className={`${hideQuestion ? 'w-[30%]' : 'w-1/2'} h-full bg-white border-2 rounded-md pl-5 pr-3`}>
+    <Box className={`${hideQuestion ? 'w-[30%]' : 'w-1/2'} ${(minutes === 29 || minutes === 4 || minutes === 0) && (weekly_Assignment === 'True' || weekly_Assignment === 'Past') ? 'blink-background' : ''} h-full bg-white border-2 rounded-md pl-5 pr-3`}>
        <Box className='w-full h-14 flex items-center justify-between'>
         <img src='/images/V-Cube-Logo.png' alt='' width='12%' />
         <Tabs value={tabValue}>

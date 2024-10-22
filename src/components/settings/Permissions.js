@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, IconButton, Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
+import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, IconButton, Dialog, DialogTitle, DialogActions, Button, Tooltip } from '@mui/material';
 import { UserDetails } from '../UserDetails';
 import { LoginContext } from '../api/login';
 import { CourseContext } from '../api/Course';
-import { CancelRounded, CheckCircleRounded } from '@mui/icons-material';
+import { CancelRounded, CheckCircleRounded, ReplayRounded } from '@mui/icons-material';
 
 const Permissions = ({ handleShowSnackbar, setIsLoading }) => {
     const { fetchPermissionsData, patchPermissionsData } = useContext(LoginContext);
@@ -31,8 +31,8 @@ const Permissions = ({ handleShowSnackbar, setIsLoading }) => {
             handleShowSnackbar('error', res.message);
         } else {
             setPermissionData(res);
+            console.log(res);
         }
-
         setIsLoading(false);
     }, [isUser, fetchPermissionsData, fetchCourse, setIsLoading, handleShowSnackbar]);
 
@@ -59,14 +59,14 @@ const Permissions = ({ handleShowSnackbar, setIsLoading }) => {
         fetchData();
     }
 
-
   return (
     <>
-    <Box className='max-h-[85%] p-1 overflow-y-auto rounded-md' sx={{scrollbarWidth : 'thin'}} >
+    <Tooltip arrow title='Refresh'><IconButton sx={{position : 'absolute'}} className='top-[6.5rem] right-1'><ReplayRounded onClick={fetchData} fontSize='large' /></IconButton></Tooltip>
+    <Box className='relative max-h-[85%] p-1 overflow-y-auto rounded-md' sx={{scrollbarWidth : 'thin'}} >
         {isUser === 'Super Admin' ? 
         Array.isArray(courseData) && courseData.map((course,index)=>
         Array.isArray(permissionData) && permissionData.some(permission=>permission.Course === course.Course) &&
-        <Accordion className='border-[1px]' key={index} expanded={expand === index} onChange={()=>setExpand(expand === index ? null : index)} >
+        <Accordion className='border-[1px] w-[90%]' key={index} expanded={expand === index} onChange={()=>setExpand(expand === index ? null : index)} >
             <AccordionSummary>{course.Course}</AccordionSummary>
             {Array.isArray(permissionData) && permissionData.map((data)=>
             <AccordionDetails key={index}>
@@ -91,7 +91,6 @@ const Permissions = ({ handleShowSnackbar, setIsLoading }) => {
                 </Typography>
             </AccordionDetails>)} 
         </Accordion>) :
-        ( isUser === 'Admin' &&
         <Accordion expanded>
             <AccordionSummary>{UserDetails('Course')}</AccordionSummary>
             {Array.isArray(permissionData) && permissionData.map((data,index)=>
@@ -116,7 +115,7 @@ const Permissions = ({ handleShowSnackbar, setIsLoading }) => {
                     </Box>
                 </Typography>
             </AccordionDetails>)}
-        </Accordion>)}
+        </Accordion>}
     </Box>
     <Dialog open={login || permission} sx={{zIndex : '900'}} >
         <DialogTitle>Are you sure you want to change Student {login ? 'Login' : 'Edit'} Access ?</DialogTitle>

@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Box, Accordion, AccordionDetails, AccordionSummary, DialogTitle, DialogActions, Dialog, Button, Typography, IconButton, DialogContent } from '@mui/material';
+import { Box, Accordion, AccordionDetails, AccordionSummary, DialogTitle, DialogActions, Dialog, Button, Typography, IconButton, DialogContent, Tooltip } from '@mui/material';
 import { UserDetails } from '../UserDetails';
 import { CourseContext } from '../api/Course';
 import { LoginContext } from '../api/login';
-import { CancelRounded, CheckCircleRounded, NoAccountsRounded } from '@mui/icons-material';
+import { CancelRounded, CheckCircleRounded, NoAccountsRounded, ReplayRounded } from '@mui/icons-material';
 
 const Users = ({ handleShowSnackbar, setIsLoading }) => {
   const { fetchCourse } = useContext(CourseContext);
@@ -72,6 +72,7 @@ const Users = ({ handleShowSnackbar, setIsLoading }) => {
   
   return (
     <>
+    <Tooltip arrow title='Refresh'><IconButton sx={{position : 'absolute'}} className='top-[6.5rem] right-1'><ReplayRounded onClick={fetchData} fontSize='large' /></IconButton></Tooltip>
     {Array.isArray(loginData) && loginData.length > 1 ? 
     <Box className='max-h-[85%] p-1 overflow-y-auto rounded-md' sx={{scrollbarWidth : 'thin'}} >
       {isUser === 'Super Admin' ? 

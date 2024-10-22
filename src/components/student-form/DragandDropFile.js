@@ -170,6 +170,7 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
     }
   }
 
+
   return (
     <>
     <Box className="w-full h-full flex flex-col items-center justify-center">

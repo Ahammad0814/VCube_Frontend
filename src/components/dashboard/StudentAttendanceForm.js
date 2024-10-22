@@ -96,7 +96,7 @@ const StudentAttendanceForm = ({ isOpen, setIsOpen, stdData, handleShowSnackbar,
             <FormGroup>
                 {['Class','Mock Test','Interview'].map((data)=>(
                     <FormControlLabel control={chkStdAtt(data) ? <CheckCircleRounded color='success' sx={{transform : 'scale(1.2)', margin : '10px 10px 10px 10px'}} /> : <Checkbox sx={{transform : 'scale(1.2)'}} disabled={!chkBatchAtt(data)} onChange={(e)=>(e.target.checked) ? setCheckedList((pre)=> [...pre, data]) : setCheckedList(checkedList.filter(value=>value !== data))} />} 
-                    label={<Typography sx={{fontSize : '20px', marginLeft : '15px', userSelect : 'none'}}>{data} Attendance</Typography>} />
+                    label={<Typography sx={{fontSize : '20px', marginLeft : '15px', userSelect : 'none'}}>{data === 'Mock Test' ? 'Weekly Test' : data} Attendance</Typography>} />
                 ))}
             </FormGroup>
             </DialogContentText>

@@ -102,6 +102,7 @@ const PersonalInfo = ({ user, stdId, student_Details, location, access, status, 
                                 </IconButton>
                             </Box>
                         </Typography>}
+                        <Typography variant='h6'>Mode : {student_Details.Mode}</Typography>
                     </Box>
                     <Box className="flex w-1/2 flex-col items-center justify-end ml-32">
                         <Typography variant='p' className='text-start w-full text-5xl' sx={{marginTop : '5%'}}>{student_Details.Name}</Typography>
