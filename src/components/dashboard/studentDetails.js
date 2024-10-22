@@ -249,7 +249,6 @@ const rows = useMemo(() => {
         isRowSelectable={(params) => {return chkRowStdAtt(params.row)}}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        disableRowSelectionOnClick
         onRowSelectionModelChange={(newSelection)=>setSelectedId(newSelection)}
       />
       <StudentAttendanceForm isOpen={openStdAttDialog} setIsOpen={setOpenStdAttDialog} stdData={stdData} handleShowSnackbar={handleShowSnackbar} setIsLoading={setIsLoading} fetchStdData={fetchStdData} studentAttData={studentAttData} studentsData={studentsData} selectedCourse={selectedCourse} selectedBatch={selectedBatch} refreshData={refreshData} />

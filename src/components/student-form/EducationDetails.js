@@ -250,15 +250,15 @@ const EducationDetails = ({ handleBack, handleNext, highDegree, setHighDegree, e
         <Accordion expanded={expanded === 'panel3'} onChange={()=>handleChange(expanded === 'panel3' ? null : 'panel3')} className={`${(onSubmit && (!degreePassYear || !degreeStartYear || !degreePlace || !degreeSpecialization || !nameDegree || !cGPADegree)) ? 'border-[1.5px] border-[#d32f2f]' : 'border-t-[1px] border-gray-300'}`} >  
             <AccordionSummary expandIcon={<ExpandMore />}>
                 <School className="text-gray-500" sx={{fontSize : '28px', marginRight : '1%'}} />
-                <Typography variant='h6'>Degree Details</Typography>
+                <Typography variant='h6'>Under Graduation Details</Typography>
             </AccordionSummary>
-            <AccordionDetails>   
+            <AccordionDetails>
             <Box sx={{marginBottom : '2%'}} className="w-full flex flex-col items-center justify-center">
                 <Box className="flex flex-row items-center justify-between w-full">
-                <InputField label="Degree College Name" value={nameDegree} onChange={(e)=>setNameDegree(e.target.value)} error={onSubmit && !degreePlace} helperText={(onSubmit && !degreePlace) ? "Enter College Name" : ""} required variant='standard' className='w-[23%]' />
-                <InputField label="Degree Specialization" value={degreeSpecialization} onChange={(e)=>setDegreeSpecialization(e.target.value)} error={onSubmit && !degreeSpecialization} helperText={(onSubmit && !degreeSpecialization) ? "Enter Specialization" : ""} required variant='standard' className='w-[23%]' />
-                <InputField label="Degree College Location" value={degreePlace} onChange={(e)=>setDegreePlace(e.target.value)} error={onSubmit && !degreePlace} helperText={(onSubmit && !degreePlace) ? "Enter College Location" : ""} required variant='standard' className='w-[23%]' />
-                <NumberInput required label="Degree CGPA" className="w-[23%]" value={cGPADegree} onChange={(e)=>setCGPADegree(e.target.value)} error={onSubmit && !cGPADegree} helperText={(onSubmit && !cGPADegree) ? "Enter CGPA" : ""} />
+                <InputField label="Under Graduation College Name" value={nameDegree} onChange={(e)=>setNameDegree(e.target.value)} error={onSubmit && !degreePlace} helperText={(onSubmit && !degreePlace) ? "Enter College Name" : ""} required variant='standard' className='w-[23%]' />
+                <InputField label="Under Graduation Specialization" value={degreeSpecialization} onChange={(e)=>setDegreeSpecialization(e.target.value)} error={onSubmit && !degreeSpecialization} helperText={(onSubmit && !degreeSpecialization) ? "Enter Specialization" : ""} required variant='standard' className='w-[23%]' />
+                <InputField label="Under Graduation College Location" value={degreePlace} onChange={(e)=>setDegreePlace(e.target.value)} error={onSubmit && !degreePlace} helperText={(onSubmit && !degreePlace) ? "Enter College Location" : ""} required variant='standard' className='w-[23%]' />
+                <NumberInput required label="Under Graduation CGPA" className="w-[23%]" value={cGPADegree} onChange={(e)=>setCGPADegree(e.target.value)} error={onSubmit && !cGPADegree} helperText={(onSubmit && !cGPADegree) ? "Enter CGPA" : ""} />
                 </Box>
                 <Box className="flex flex-row items-center justify-between w-[49%] mt-5">
                 <FormControl className='w-[47%]'>
