@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Box, Typography, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, IconButton } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, IconButton, TextField } from '@mui/material';
 import { CloudUploadOutlined, ArrowForward, TouchAppRounded, CheckCircleRounded, LoginRounded, DeleteForever, CloseRounded } from '@mui/icons-material';
 import { StudentsContext } from '../api/students';
 import { BatchContext } from '../api/batch';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import format from 'date-fns/format';
 
 const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManually, handleShowSnackbar, setIsLoading, loading, selectedCourse, selectedBatch, isUser, handleClose, refreshData }) => {
   const { fetchStudentsData, postBulkStudentData, deleteBulkStudentData } = useContext(StudentsContext);
@@ -15,7 +18,18 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
   const [existData, setExistData] = useState([]);
   const [stdExists, setStdExists] = useState(false);
   const [filterData, setFilterData] = useState([]);
-  
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [confirmAction, setConfirmActions] = useState(false);
+  const [disableBtn, setDisableBtn] = useState(false);
+
+  const handleDateChange = (newValue) => {
+      setSelectedDate(formatDate(newValue));
+  };
+
+  const formatDate = (date) => {
+      return date ? format(date, 'dd-MMM-yyyy') : '';
+  };
+
   useEffect(()=>{
     setIsFileError(fileError);
   },[fileError])
@@ -34,37 +48,38 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
   const handleSubmit = () => {
     if (onDrop && !fileName){
       handleShowSnackbar('error','Upload a Valid File');
+    }else if(!selectedDate || selectedDate === null){
+      handleShowSnackbar('error','Please Select Students Joining Date.');
     }else{
-      setIsLoading(true);
-      getBatchData();
+      setConfirmActions(true);
     }
   };
 
-  const getBatchData = async () => {
-    const batchData = await fetchBatchData(selectedCourse);
-    if (batchData && batchData.message){
-      handleShowSnackbar('error',batchData.message);
-      setIsLoading(false);
-    }else if(batchData && batchData.length > 0){
-      checkData(batchData);
-    }else{
-      handleShowSnackbar('error','Something went wrong. Please try again later.');
-      setIsLoading(false);
-    }
-  };
+  // const getBatchData = async () => {
+  //   const batchData = await fetchBatchData(selectedCourse);
+  //   if (batchData && batchData.message){
+  //     handleShowSnackbar('error',batchData.message);
+  //     setIsLoading(false);
+  //   }else if(batchData && batchData.length > 0){
+  //     checkData(batchData);
+  //   }else{
+  //     handleShowSnackbar('error','Something went wrong. Please try again later.');
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const checkData = async(data) => {
-    const found = await fileData && fileData.every((stdData) => {
-      return data && data.some(batchData => stdData.BatchName === batchData.BatchName);
-    });
-    if(!found){
-      handleShowSnackbar('error','Batch not found. Please add a batch before adding the student.');
-      setIsLoading(false);
-    }else if(found){
-      setIsLoading(true);
-      checkStd(fileData);
-    }
-  };
+  // const checkData = async(data) => {
+  //   const found = await fileData && fileData.every((stdData) => {
+  //     return data && data.some(batchData => stdData.BatchName === batchData.BatchName);
+  //   });
+  //   if(!found){
+  //     handleShowSnackbar('error','Batch not found. Please add a batch before adding the student.');
+  //     setIsLoading(false);
+  //   }else if(found){
+  //     setIsLoading(true);
+      
+  //   }
+  // };
 
   const checkStd = async (data) => {
     const fetchData = await fetchStudentsData(selectedCourse);
@@ -165,6 +180,7 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
       handleShowSnackbar('error',res.message);
     }else if (res === true){
       handleShowSnackbar('success',`${selectedBatch} Student Data Deleted Successfully.`);
+      setDisableBtn(false);
       handleClose();
     }
   }
@@ -213,19 +229,36 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
       </Box>
       {(fileName && !fileError) ? (<Typography sx={{marginTop : '10px'}}><strong>Selected file: </strong> {fileName}</Typography>) : (isFileError) ? <Typography sx={{color : 'red', marginTop : '10px'}}>Upload a Valid File.</Typography> : null}
     </Box>
-    <Box className="flex w-1/3 h-10 items-center justify-around mt-10 mb-10">
-    {isUser !== 'Super Admin' && <Button variant='outlined' endIcon={<ArrowForward />} onClick={()=>setUploadManually(true)}>Upload Manually</Button>}
-    <Button variant='contained' startIcon={<LoginRounded sx={{transform : 'rotate(90deg)'}} />}
-       onClick={handleSubmit} sx={{width : (isUser === 'Super Admin' || isUser === 'Admin') ? '100%' : '50%', height : (isUser === 'Super Admin' || isUser === 'Admin') ? '100%' : '90%'}}>Import Data
+    <Box className='mt-5'>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <DatePicker
+            label="Select Date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            renderInput={(params) => (
+                <TextField 
+                    {...params} 
+                    value={formatDate(selectedDate)} 
+                />
+            )}
+        />
+      </LocalizationProvider>
+    </Box>
+    <Box className="flex w-1/3 h-10 items-center justify-around mt-5 mb-5">
+    {isUser !== 'Super Admin' && <Button variant='outlined' sx={{width : '45%'}} endIcon={<ArrowForward />} onClick={()=>setUploadManually(true)}>Upload Manually</Button>}
+    <Button variant='contained' startIcon={!disableBtn && <LoginRounded sx={{transform : 'rotate(90deg)'}} />}
+      disabled={disableBtn}
+       onClick={handleSubmit} 
+       sx={{width : (isUser === 'Super Admin' || isUser === 'Admin') ? '100%' : '45%', height : (isUser === 'Super Admin' || isUser === 'Admin') ? '100%' : '90%'}}>
+        {disableBtn ? <CircularProgress size={25}/> : 'Import Data'}
     </Button>
     </Box>
     {(isUser === 'Super Admin' || isUser === 'Admin') &&
-     <Box className='w-1/2 h-12 mt-10 flex items-center justify-evenly'>
+     <Box className='w-1/2 h-12 mt-5 flex items-center justify-evenly'>
         <Button variant='contained' color='error' sx={{width : '40%'}} onClick={()=>setDeleteStdData(true)}>Delete Student's Data</Button>
         <Button variant='outlined' endIcon={<ArrowForward />}  sx={{width : '40%'}} onClick={()=>setUploadManually(true)}>Upload Manually</Button>
     </Box>}
     </Box>
-
 
     <Dialog open={(isUser === 'Super Admin' || isUser === 'Admin') && deleteStdData} onClose={()=>{setDeleteStdData(false);setConfirmDelete(false);setDeleteValue(null)}} maxWidth='lg' sx={{zIndex : '910'}}>
       <img src='/images/V-Cube-Logo.png' width='14%' className='ml-[43%]' alt='' />
@@ -290,6 +323,27 @@ const DragAndDropList = ({ onDrop, fileData, fileName, fileError, setUploadManua
       <DialogActions>
         <Button variant='outlined' onClick={()=>{setStdExists(false);setExistData([]);setFilterData([])}}>Cancel Import</Button>
         <Button variant='contained' onClick={()=>{filterStdData(filterData);setStdExists(false)}}>Continue to Import Data</Button>
+      </DialogActions>
+    </Dialog>
+
+    <Dialog open={confirmAction} onClose={()=>setConfirmActions(false)} sx={{zIndex : '910'}}>
+      <DialogTitle>Please confirm action.</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+        The following Date and Batch will be added to the Students.
+        <br/><br/>
+        <strong>Selected Batch : {selectedBatch}</strong>
+          <br/>
+        <strong>Joining Date : {selectedDate}</strong>
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button variant='outlined' onClick={()=>setConfirmActions(false)}>
+          Cancel
+        </Button>
+        <Button variant='contained' onClick={()=>{checkStd(fileData);setIsLoading(true);setConfirmActions(false);setDisableBtn(true)}}>
+          Confirm
+        </Button>
       </DialogActions>
     </Dialog>
     </>
